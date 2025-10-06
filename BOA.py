@@ -2,13 +2,12 @@ import math, random, os, sys
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-# 89 151 271  10 y 100 - 20 y 500 - 30 y 1000
 class Problem:
     def __init__(self):
         self.n_clients = 24
         self.n_hubs = 8
 
-        # Matriz de distancias cliente-hub (24 x 8)
+        # Matriz de distancias cliente-hub (24 x 8), mejor resultado posible 271.
         self.distancias = [
             [6, 8, 12, 7, 9, 6, 10, 11],
             [5, 9, 6, 10, 8, 7, 9, 12],
@@ -45,6 +44,15 @@ class Problem:
         # Distancia máxima tolerada
         self.D_max = 9
 
+        # Determinar complejidad según dimensiones
+        if self.n_clients == 24 and self.n_hubs == 8:
+            self.label = "D"
+        elif self.n_clients == 12 and self.n_hubs == 5:
+            self.label = "M"
+        elif self.n_clients == 6 and self.n_hubs == 3:
+            self.label = "S"
+        else:
+            self.label = "X"  # Caso no contemplado
 
     def check(self, x):
         # Derivar hubs desde asignaciones
@@ -205,7 +213,7 @@ class BOA:
         # Mejor global
         self.global_best = min(self.swarm, key=lambda p: p.fitness())
         self.convergence.append(self.global_best.fitness())
-        #self.show_results(0)
+        self.show_results(0)
 
     def evolve(self):
         for t in range(1, self.T + 1):
@@ -224,23 +232,40 @@ class BOA:
             if candidate.fitness() < self.global_best.fitness():
                 self.global_best = candidate
             self.convergence.append(self.global_best.fitness())
-            #self.show_results(t)
+            self.show_results(t)
 
     def solve(self):
         self.initialize()
         self.evolve()
         return self.global_best
 
-    #def show_results(self, t):
-        #print(f"t: {t}, g_best: {self.global_best}")
+    def show_results(self, t): #comentar para ocultar las iteraciones
+        print(f"t: {t}, g_best: {self.global_best}")
 
 
-folder_path = 'C:/Users/fabia/Desktop/BOA'
+if len(sys.argv) != 3:
+    print("Uso: python BOA.py <num_particulas> <num_iteraciones>")
+    sys.exit(1)
 
-part = 20
-iter = 1000
-n_runs = 30
-# Ejecutar 40 veces
+part = int(sys.argv[1])
+iter = int(sys.argv[2])
+n_runs = 20
+
+# Restricciones
+if part > 30 or iter > 1000:
+    print("Error: el número máximo permitido es 30 partículas y 1000 iteraciones.")
+    sys.exit(1)
+
+if part < 1 or iter < 1:
+    print("Error: los valores deben ser mayores a 0.")
+    sys.exit(1)
+
+print(f"Número de partículas: {part}")
+print(f"Número de iteraciones: {iter}")
+print(f"El algoritmo se ejecutará:{n_runs} veces")
+
+folder_path = 'C:/Users/fabia/Desktop/BOA/Gráficos'
+
 resultados = []
 convergencia = None
 mayor_mejora = -float('inf')
@@ -280,8 +305,7 @@ plt.xlabel('Iteración')
 plt.ylabel('Mejor Valor (fitness)')
 plt.grid(True)
 plt.tight_layout()
-plt.savefig(os.path.join(folder_path + '/D_Convergencia.png'))
-
+plt.savefig(os.path.join(folder_path + '/Convergencia.png'))
 
 # Cálculo de QMetric por iteración de la mejor corrida
 f_optimo = 271
@@ -306,8 +330,7 @@ plt.title('Boxplot del mejor fitness en 40 ejecuciones')
 plt.ylabel('Fitness')
 plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.tight_layout()
-plt.savefig(folder_path + '/D_Boxpot.png')
-
+plt.savefig(folder_path + '/Boxplot.png')
 
 plt.figure(figsize=(10, 5))
 plt.plot(qmetric_iter, marker='s', linestyle='-', color='green')
@@ -316,4 +339,4 @@ plt.xlabel('Iteración')
 plt.ylabel('QMetric')
 plt.grid(True)
 plt.tight_layout()
-plt.savefig(folder_path + '/D_QMetric.png')
+plt.savefig(folder_path + '/QMetric.png')

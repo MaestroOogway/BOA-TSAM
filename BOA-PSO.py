@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import mannwhitneyu
 
-# --- Definición del problema ---
+# Definición del problema 
 class Problem:
     def __init__(self):
         self.n_clients = 12

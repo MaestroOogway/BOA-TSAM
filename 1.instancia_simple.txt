@@ -3,7 +3,7 @@ class Problem:
         self.n_clients = 6
         self.n_hubs = 3
 
-        # Matriz de distancias cliente-hub
+        # Matriz de distancias cliente-hub (3x6), mejor valor 89
         self.distancias = [
             [5, 8, 11],
             [7, 4, 10],
